@@ -25,7 +25,7 @@ db1 = datascript.db_with(db, [[":db/add", 1, "name", "Ivan"],
 db2 = datascript.db_with(db1, [{":db/id": 2,
                                 "name": "Igor",
                                 "age": 35}])
-N, A, E = m.variables('n', 'a', 'e')
+A, E = m.variables('a', 'e')
 query = m.query(find=[A], where=[[E, "name", "Igor"], [E, "age", A]])
 q = query.code()
 result = datascript.q(q, db2)
