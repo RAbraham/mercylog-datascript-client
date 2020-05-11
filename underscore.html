@@ -12,21 +12,26 @@
 
 <body onload="brython(1)">
 <script type="text/python">
-from browser import window, alert
+from browser import window, alert, console
 datascript = window.datascript
 
 from mercylog_datascript import DataScriptV1
-datascript = window.datascript
 m = DataScriptV1()
 
+import urllib.request, json
+data_file_url = 'https://raw.githubusercontent.com/RAbraham/mercylog-datascript-client/master/data.json'
+console.log('Loading File')
+with urllib.request.urlopen(data_file_url) as url:
+    result = json.loads(url.read())
+console.log('End loading file')
+
 db = datascript.empty_db()
-db1 = datascript.db_with(db, [[":db/add", 1, "name", "Ivan"],
-                              [":db/add", 1, "age", 17]])
-db2 = datascript.db_with(db1, [{":db/id": 2,
-                                "name": "Igor",
-                                "age": 35}])
-A, E = m.variables('a', 'e')
-query = m.query(find=[A], where=[[E, "name", "Igor"], [E, "age", A]])
+db2 = datascript.db_with(db, result)
+
+# [:find ?title :where [_ ":movie/title" ?title]]
+title = m.variables('title')
+query = m.query(find=[title], where=[[m._, ":movie/title", title]])
+
 q = query.code()
 result = datascript.q(q, db2)
 alert(result)

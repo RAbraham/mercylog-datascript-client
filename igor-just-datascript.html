@@ -5,8 +5,6 @@
     <meta charset="utf-8">
     <script type="text/javascript" src="brython.js"></script>
     <script type="text/javascript" src="brython_stdlib.js"></script>
-    <script src="https://github.com/RAbraham/mercylog-datascript/releases/download/v0.1.2/mercylog_datascript.brython.js"></script>
-
     <script src="https://github.com/tonsky/datascript/releases/download/0.18.10/datascript-0.18.10.min.js"></script>
 </head>
 
@@ -15,23 +13,15 @@
 from browser import window, alert
 datascript = window.datascript
 
-from mercylog_datascript import DataScriptV1
-datascript = window.datascript
-m = DataScriptV1()
-
 db = datascript.empty_db()
-db1 = datascript.db_with(db, [[":db/add", 1, "name", "Ivan"],
-                              [":db/add", 1, "age", 17]])
-db2 = datascript.db_with(db1, [{":db/id": 2,
+db = datascript.db_with(db, [{":db/id": 1,
+                                "name": "Ivan",
+                                "age": 17},
+                                {":db/id": 2,
                                 "name": "Igor",
                                 "age": 35}])
-A, E = m.variables('a', 'e')
-query = m.query(find=[A], where=[[E, "name", "Igor"], [E, "age", A]])
-q = query.code()
-result = datascript.q(q, db2)
+result = datascript.q('[:find ?a :where [?e "name" "Igor"] [?e "age" ?a]]', db)
 alert(result)
-
-
 </script>
 </body>
 

@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="brython.js"></script>
+    <script type="text/javascript" src="brython_stdlib.js"></script>
+    <script src="https://github.com/RAbraham/mercylog-datascript/releases/download/v0.1.2/mercylog_datascript.brython.js"></script>
+
+    <script src="https://github.com/tonsky/datascript/releases/download/0.18.10/datascript-0.18.10.min.js"></script>
+</head>
+
+<body onload="brython(1)">
+<script type="text/python">
+from browser import window, alert, console
+datascript = window.datascript
+
+from mercylog_datascript import DataScriptV1
+m = DataScriptV1()
+
+import urllib.request, json
+data_file_url = 'https://raw.githubusercontent.com/RAbraham/mercylog-datascript-client/master/data.json'
+console.log('Loading File')
+with urllib.request.urlopen(data_file_url) as url:
+    result = json.loads(url.read())
+console.log('End loading file')
+
+db = datascript.empty_db()
+db2 = datascript.db_with(db, result)
+
+# [:find ?director ?box_office :in $ [[?title ?box_office]] :where [?p ":person/name" ?director] [?movie ":movie/director" ?p] [?movie ":movie/title" ?title]]
+movie, p, title, box_office, director = m.variables('movie', 'p', 'title', 'box_office', 'director')
+title_box_office_pairs = [
+ ["Die Hard", 140700000],
+ ["Alien", 104931801],
+ ["Lethal Weapon", 120207127],
+ ["Commando", 57491000],
+]
+query = m.query(find=[director,
+                      box_office],
+                parameters=[m.collection([title, box_office])],
+                where=[[p, ":person/name", director],
+                       [movie, ":movie/director", p],
+                       [movie, ":movie/title", title]])
+
+q = query.code()
+result = datascript.q(q, db2, title_box_office_pairs)
+alert(result) # [['Richard Donner', 120207127], ['Mark L. Lester', 57491000], ['John McTiernan', 140700000], ['Ridley Scott', 104931801]]
+
+
+</script>
+</body>
+
+</html>

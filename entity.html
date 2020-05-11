@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="brython.js"></script>
+    <script type="text/javascript" src="brython_stdlib.js"></script>
+    <script src="https://github.com/RAbraham/mercylog-datascript/releases/download/v0.1.0/mercylog_datascript.brython.js"></script>
+
+    <script src="https://github.com/tonsky/datascript/releases/download/0.18.10/datascript-0.18.10.min.js"></script>
+</head>
+
+<body onload="brython(1)">
+<script type="text/python">
+from browser import window, alert, console
+datascript = window.datascript
+
+from mercylog_datascript import DataScriptV1
+m = DataScriptV1()
+
+import urllib.request, json
+data_file_url = 'https://raw.githubusercontent.com/RAbraham/mercylog-datascript-client/master/data.json'
+console.log('Loading File')
+with urllib.request.urlopen(data_file_url) as url:
+    result = json.loads(url.read())
+console.log('End loading file')
+
+db = datascript.empty_db()
+db2 = datascript.db_with(db, result)
+# [:find ?e :where [?e :person/name "Linda Hamilton"]]
+e = m.variables('e')
+query = m.query(find=[e], where=[[e, ":person/name", "Linda Hamilton"]])
+q = query.code()
+result = datascript.q(q, db2)
+alert(result) # [[102]]
+
+
+</script>
+</body>
+
+</html>
